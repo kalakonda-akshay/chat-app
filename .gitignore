@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+*.log
+*.err
+
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+chat-app.zip
+chat-app-zip-source/
+.vercel/
