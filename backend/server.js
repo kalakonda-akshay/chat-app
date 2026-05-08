@@ -71,10 +71,15 @@ initSocket(io);
 
 const PORT = process.env.PORT || 5000;
 
+const connectDatabase = async () => {
+  if (mongoose.connection.readyState === 1) return;
+  await mongoose.connect(process.env.MONGO_URI);
+  console.log("MongoDB connected");
+};
+
 const startServer = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB connected");
+    await connectDatabase();
 
     httpServer.on("error", (error) => {
       if (error.code === "EADDRINUSE") {
@@ -96,4 +101,10 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (process.env.VERCEL) {
+  await connectDatabase();
+} else {
+  startServer();
+}
+
+export default app;
