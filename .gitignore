@@ -10,3 +10,5 @@ backend/uploads/*
 chat-app.zip
 chat-app-zip-source/
 .vercel/
+
+.vercel
