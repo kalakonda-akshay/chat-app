@@ -1,33 +1,51 @@
-# Deployment Guide
+# Full-Stack Deployment Guide
 
-## GitHub
+This project consists of two parts:
+1. **Frontend**: React + Vite (hosted on **Vercel**)
+2. **Backend**: Express + Socket.IO + MongoDB (hosted on **Render** / **Railway** / VPS)
 
-This repository is safe to push because `backend/.env` is ignored. Do not commit real database passwords or JWT secrets.
+---
 
-## Vercel Frontend
+## 1. Backend Deployment (Render)
 
-Vercel should deploy the React frontend only.
+Because Socket.IO requires continuous, long-lived WebSocket connections, deploy the backend to a dedicated Node server like Render:
 
-1. Import the GitHub repo in Vercel.
-2. Use the root project directory.
-3. The included `vercel.json` tells Vercel to build `frontend`.
-4. Add this environment variable after deploying your backend:
+### Steps on Render:
+1. Log in to [Render.com](https://render.com) and click **New +** → **Web Service**.
+2. Connect your GitHub repository.
+3. Configure the service settings:
+   - **Root Directory**: `chat-app/backend` (or `backend` if repo root is the chat-app folder)
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Plan**: `Free`
+4. Add the following **Environment Variables**:
+   - `PORT`: `5000`
+   - `MONGO_URI`: `your_mongodb_atlas_connection_string`
+   - `JWT_SECRET`: `your_random_jwt_secret_key`
+   - `CLIENT_URL`: `https://chat-app-chi-pink.vercel.app` (your exact Vercel frontend URL, no trailing slash)
+5. Click **Create Web Service** and copy your backend URL (e.g. `https://chat-app-backend.onrender.com`).
 
-```text
-VITE_API_URL=https://your-backend-url.com
-```
+---
 
-## Backend
+## 2. Frontend Deployment (Vercel)
 
-The backend uses Express and Socket.IO. For real-time WebSocket support, deploy it to a long-running Node host such as Render, Railway, Fly.io, or a VPS.
+The frontend is deployed to Vercel at `https://chat-app-chi-pink.vercel.app`.
 
-Set these backend environment variables:
+### Connect Backend to Vercel:
+1. Open your project on [Vercel Dashboard](https://vercel.com).
+2. Navigate to **Settings** → **Environment Variables**.
+3. Add or update the variable:
+   - **Key**: `VITE_API_URL`
+   - **Value**: `https://chat-app-backend.onrender.com` (your live Render backend URL, without trailing slash)
+4. Go to **Deployments** → click **...** on the latest deployment → **Redeploy**.
 
-```text
-PORT=5000
-MONGO_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=change_this_to_a_long_random_secret
-CLIENT_URL=https://your-vercel-app.vercel.app
-```
+---
 
-Then set `VITE_API_URL` in Vercel to the deployed backend URL.
+## 3. Verification
+
+1. Open `https://chat-app-backend.onrender.com` in your browser:
+   - Should return: `{"message":"MERN real-time chat API is running."}`
+2. Open `https://chat-app-chi-pink.vercel.app/`:
+   - Register a new user or click **Login as Demo**.
+   - Open in an incognito window with a second user to test live messaging and presence.
